@@ -15,13 +15,44 @@ export const ACTIONS ={
 function reducer(state, { type, payload }) {
 switch(type) {
   case ACTIONS.ADD_DIGIT:
+    if(payload.digit === "0" && state.currentDigits === "0") {
+      return state
+    }
+    if(payload.digit === "." && state.currentDigits.includes(".")) {
+      return state
+    }
     return{
       ...state, 
       currentDigits: `${state.currentDigits || ""}${payload.digit}`
     }
+    case ACTIONS.CHOOSE_OPERATION:
+      if (state.currentDigits === null && state.previousDigits === null) {
+        return state
+      }
+      if(state.previousDigits == null){
+        return {
+          ...state, 
+          operation: payload.operation, 
+          previousDigits: state.currentDigits, 
+          currentDigits: null,
+        }
+        return{
+          ...state, 
+          previousDigits: evalute(state), 
+          operation:payload.operation,
+          currentDigits: null,
+        }
 
+      }
+    case ACTIONS.CLEAR:
+      return {}
   }
 }
+
+function evaluate({currentDigits, previousDigits, operation}){
+
+}
+
 function App() {
   const [{currentDigits, previousDigits, operation }, dispatch] = useReducer(reducer, {})
 
@@ -32,7 +63,7 @@ function App() {
         <div className="previous-digits">{previousDigits} {operation}</div>
         <div className= "current-digits">{currentDigits}</div>
       </div>
-      <button className="span-two">AC</button>
+      <button className="span-two" onClick={() => dispatch({type : ACTIONS.CLEAR})}>AC</button>
       <button>DEL</button>
       <OperationButton operation = "/" dispatch={dispatch} />
       <DigitButton digit = "1" dispatch={dispatch} />
