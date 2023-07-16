@@ -36,21 +36,41 @@ switch(type) {
           previousDigits: state.currentDigits, 
           currentDigits: null,
         }
+      }
         return{
           ...state, 
-          previousDigits: evalute(state), 
+          previousDigits: evaluate(state), 
           operation:payload.operation,
           currentDigits: null,
         }
 
-      }
+      
     case ACTIONS.CLEAR:
       return {}
   }
 }
 
 function evaluate({currentDigits, previousDigits, operation}){
+  const prev = parseFloat(previousDigits);
+  const current = parseFloat(currentDigits); 
 
+  if (isNaN(prev) || isNaN(current)) return ''; 
+  let computation = ''; 
+  switch (operation) {
+    case '+':
+      computation = prev + current 
+       break
+    case '-': 
+    computation = prev - current 
+       break 
+    case '*': 
+    computation = prev * current
+       break
+    case '/': 
+    computation = prev / current
+       break 
+  }
+  return computation.toString()
 }
 
 function App() {
