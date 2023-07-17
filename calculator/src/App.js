@@ -29,6 +29,15 @@ switch(type) {
       if (state.currentDigits === null && state.previousDigits === null) {
         return state
       }
+
+      if (state.currentDigits === null){
+        return{
+          ...state, 
+          operation: payload.operation,
+        }
+      }
+
+
       if(state.previousDigits == null){
         return {
           ...state, 
@@ -44,7 +53,17 @@ switch(type) {
           currentDigits: null,
         }
 
-      
+      case ACTIONS.EVALUATE:
+        if (state.operation == null || state.previousDigits == null || state.currentDigits == null){
+          return state
+        }
+
+        return {
+          ...state, 
+          previousDigits: null, 
+          operation: null,
+          currentDigits: evaluate(state), 
+        }
     case ACTIONS.CLEAR:
       return {}
   }
@@ -100,7 +119,7 @@ function App() {
       <OperationButton operation = "-" dispatch={dispatch} />
       <DigitButton digit = "." dispatch={dispatch} />
       <DigitButton digit = "0" dispatch={dispatch} />
-      <button className="span-two">=</button>
+      <button className="span-two" onClick={() => dispatch({type : ACTIONS.EVALUATE})}>=</button>
     </div>
   );
 }
