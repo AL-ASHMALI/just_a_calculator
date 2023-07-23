@@ -13,6 +13,7 @@ export const ACTIONS ={
 }
 
 function reducer(state, { type, payload }) {
+// eslint-disable-next-line default-case
 switch(type) {
   case ACTIONS.ADD_DIGIT:
     if (state.overwrite) {
@@ -103,6 +104,7 @@ function evaluate({currentDigits, previousDigits, operation}){
 
   if (isNaN(prev) || isNaN(current)) return ''; 
   let computation = ''; 
+  // eslint-disable-next-line default-case
   switch (operation) {
     case '+':
       computation = prev + current 
@@ -120,6 +122,16 @@ function evaluate({currentDigits, previousDigits, operation}){
   return computation.toString()
 }
 
+const INTEGER_FORMATTER = new Intl.NumberFormat("en-us", {
+  maximumFractionDigits: 0,
+})
+function formatOperand(operand) {
+  if (operand == null) return
+  const [integer, decimal] = operand.split(".")
+  if (decimal == null) return INTEGER_FORMATTER.format(integer)
+  return `${INTEGER_FORMATTER.format(integer)}.${decimal}`
+}
+
 function App() {
   const [{currentDigits, previousDigits, operation }, dispatch] = useReducer(reducer, {})
 
@@ -127,8 +139,8 @@ function App() {
   return (
     <div className="calculator-grid">
       <div className="output">
-        <div className="previous-digits">{previousDigits} {operation}</div>
-        <div className= "current-digits">{currentDigits}</div>
+        <div className="previous-digits">{formatOperand(previousDigits)} {operation}</div>
+        <div className= "current-digits">{formatOperand(currentDigits)}</div>
       </div>
       <button className="span-two" onClick={() => dispatch({type : ACTIONS.CLEAR})}>AC</button>
       <button onClick={() => dispatch({type : ACTIONS.DELETE_DIGITS})}>DEL</button>
