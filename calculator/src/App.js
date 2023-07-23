@@ -15,6 +15,13 @@ export const ACTIONS ={
 function reducer(state, { type, payload }) {
 switch(type) {
   case ACTIONS.ADD_DIGIT:
+    if (state.overwrite) {
+      return {
+        ...state, 
+        currentDigits: payload.digit, 
+        overwrite: false,
+      }
+    }
     if(payload.digit === "0" && state.currentDigits === "0") {
       return state
     }
@@ -61,9 +68,30 @@ switch(type) {
         return {
           ...state, 
           previousDigits: null, 
+          overwrite: true,
           operation: null,
           currentDigits: evaluate(state), 
         }
+
+        case ACTIONS.DELETE_DIGITS:
+          if(state.overwrite){
+            return{
+              ...state, 
+              overwrite: false, 
+              currentDigits: null
+            }
+          }
+          if(state.currentDigits == null) return state
+          if(state.currentDigits.length ===1){
+            return{
+              ...state, 
+              currentDigits:null
+            }
+          }
+          return{
+            ...state, 
+            currentDigits: state.currentDigits.slice(0, -1) // will remove the last digit
+          }
     case ACTIONS.CLEAR:
       return {}
   }
@@ -103,7 +131,7 @@ function App() {
         <div className= "current-digits">{currentDigits}</div>
       </div>
       <button className="span-two" onClick={() => dispatch({type : ACTIONS.CLEAR})}>AC</button>
-      <button>DEL</button>
+      <button onClick={() => dispatch({type : ACTIONS.DELETE_DIGITS})}>DEL</button>
       <OperationButton operation = "/" dispatch={dispatch} />
       <DigitButton digit = "1" dispatch={dispatch} />
       <DigitButton digit = "2" dispatch={dispatch} />
